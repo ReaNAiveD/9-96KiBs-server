@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.1.5.RELEASE'
     id 'java'
+    id "org.sonarqube" version "2.7.1"
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -27,4 +28,15 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sonarqube {
+    properties {
+        property "sonar.language", "java"
+        property "sonar.sources", "src/main/"
+        property "sonar.tests", "src/test/"
+        property "sonar.login", "admin"
+        property "sonar.password", "admin"
+        property "sonar.scm.provider", "git"
+    }
 }
