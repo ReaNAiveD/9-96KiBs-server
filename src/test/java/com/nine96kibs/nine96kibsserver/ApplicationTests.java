@@ -1,29 +1,33 @@
 package com.nine96kibs.nine96kibsserver;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.nine96kibs.nine96kibsserver.dao.AccountMapper;
 import com.nine96kibs.nine96kibsserver.dao.ClassicPoetryLearnMapper;
 import com.nine96kibs.nine96kibsserver.dto.CommonResult;
-import com.nine96kibs.nine96kibsserver.po.ClassicPoetryReciteModel;
-import com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo;
 import com.nine96kibs.nine96kibsserver.po.ReciteLearnProgress;
 import com.nine96kibs.nine96kibsserver.po.ReciteToLearn;
 import com.nine96kibs.nine96kibsserver.service.AccountService;
 import com.nine96kibs.nine96kibsserver.service.ClassicPoetryLearnService;
+import com.nine96kibs.nine96kibsserver.vo.AccountInfoVO;
 import com.nine96kibs.nine96kibsserver.vo.AccountVO;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
+import okhttp3.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -86,19 +90,13 @@ public class ApplicationTests {
     public void classicPoetryLearnServiceTest(){
         accountMapper.createNewAccount("test", "123");
         int userId = accountMapper.selectAccountByUserName("test").getId();
-        List<ReciteToLearn> learnInfos = classicPoetryLearnService.getLearnListByTask(userId, 1);
-        Assert.assertEquals(2, learnInfos.size());
-        ReciteToLearn reciteToLearn0 = learnInfos.get(0);
-        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn0.getReciteId(), userId, 1));
-        ReciteToLearn reciteToLearn1 = learnInfos.get(1);
-        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn1.getReciteId(), userId, 0));
-        List<ReciteToLearn> learnInfos1 = classicPoetryLearnService.getLearnListByTask(userId, 1);
-        Assert.assertEquals(2, learnInfos1.size());
-        ReciteToLearn reciteToLearn10 = learnInfos1.get(0);
-        System.out.println("reciteToLearn10.getLatestChoice() : " + reciteToLearn10.getLatestChoice());
-        System.out.println("learnInfos1.get(1).getLatestChoice() : " + learnInfos1.get(1).getLatestChoice());
-        Assert.assertEquals(0, reciteToLearn10.getRecitePrior(), 0.001);
-        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn10.getReciteId(), userId, 2));
+        ReciteToLearn reciteToLearn= classicPoetryLearnService.getLearnListByTask(userId, 1);
+        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), userId, 1));
+        reciteToLearn = classicPoetryLearnService.getLearnListByTask(userId, 1);
+        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), userId, 0));
+        reciteToLearn = classicPoetryLearnService.getLearnListByTask(userId, 1);
+        Assert.assertEquals(0, reciteToLearn.getRecitePrior(), 0.001);
+        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), userId, 2));
         Assert.assertEquals(1, classicPoetryLearnService.getCommandRecite(userId, 1).size());
         int commandReciteId = classicPoetryLearnService.getCommandRecite(userId, 1).get(0).getReciteId();
         classicPoetryLearnService.setUncommand(userId, commandReciteId);
@@ -107,5 +105,70 @@ public class ApplicationTests {
         Assert.assertEquals(1, classicPoetryLearnService.getReciteCollection(userId).size());
         classicPoetryLearnService.uncollectRecite(userId, commandReciteId);
         Assert.assertEquals(0, classicPoetryLearnService.getReciteCollection(userId).size());
+    }
+
+    @Test
+    public void httpRequestAccountTest(){
+        try {
+            Gson gson = new Gson();
+            AccountVO accountVO = new AccountVO("realTest", "123");
+            OkHttpClient httpClient = new OkHttpClient.Builder()
+                    .readTimeout(100, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+                    .connectTimeout(60, TimeUnit.SECONDS)
+                    .build();
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(accountVO));
+            Request request = new Request.Builder()
+                    .url("http://47.100.97.17:8848/account/register").post(requestBody).build();
+            Response response = httpClient.newCall(request).execute();
+            System.out.println(response.message());
+            requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(accountVO));
+            request = new Request.Builder()
+                    .url("http://47.100.97.17:8848/account/login").post(requestBody).build();
+            response = httpClient.newCall(request).execute();
+            Assert.assertTrue(response.isSuccessful());
+            Assert.assertNotNull(response.body());
+            JsonObject jsonObject = gson.fromJson(response.body().string(), JsonObject.class);
+            AccountInfoVO accountInfoVO = gson.fromJson(jsonObject.get("data"), AccountInfoVO.class);
+            Assert.assertEquals("realTest", accountInfoVO.getUsername());
+            int userId = accountInfoVO.getId();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void httpRequestClassicPoetryTest(){
+        try {
+            Gson gson = new Gson();
+            AccountVO accountVO = new AccountVO("realTest", "123");
+            OkHttpClient httpClient = new OkHttpClient.Builder()
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(6, TimeUnit.SECONDS)
+                    .connectTimeout(6, TimeUnit.SECONDS)
+                    .build();
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(accountVO));
+            Request request = new Request.Builder()
+                    .url("http://47.100.97.17:8848/account/login").post(requestBody).build();
+            Response response = httpClient.newCall(request).execute();
+            Assert.assertTrue(response.isSuccessful());
+            Assert.assertNotNull(response.body());
+            CommonResult commonResult = gson.fromJson(response.body().string(), CommonResult.class);
+            AccountInfoVO accountInfoVO = gson.fromJson(gson.toJson(commonResult.getData()), AccountInfoVO.class);
+            //AccountInfoVO accountInfoVO = gson.fromJson(jsonObject.get("data"), AccountInfoVO.class);
+            Assert.assertEquals("realTest", accountInfoVO.getUsername());
+            int userId = accountInfoVO.getId();
+
+            request = new Request.Builder()
+                    .url("http://47.100.97.17:8848/classic-poetry/normal/learn-list?user-id=" + userId + "&task-id=1").get().build();
+            response = httpClient.newCall(request).execute();
+            Assert.assertTrue(response.isSuccessful());
+            Assert.assertNotNull(response.body());
+            System.out.println(response.body().toString());
+            commonResult = gson.fromJson(response.body().string(), CommonResult.class);
+            ReciteToLearn reciteToLearn = gson.fromJson(gson.toJson(commonResult.getData()), ReciteToLearn.class);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

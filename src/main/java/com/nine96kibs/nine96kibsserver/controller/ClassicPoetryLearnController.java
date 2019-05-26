@@ -20,12 +20,9 @@ public class ClassicPoetryLearnController {
     private ClassicPoetryLearnService classicPoetryLearnService;
 
     @PostMapping("/choose")
-    public CommonResult chooseFamiliarity(@RequestBody List<ReciteLearnChoice> learnChoices){
+    public CommonResult chooseFamiliarity(@RequestBody ReciteLearnChoice learnChoice){
         try {
-            for (ReciteLearnChoice learnChoice:
-                 learnChoices) {
                 classicPoetryLearnService.reciteChoose(learnChoice);
-            }
         } catch (Exception e){
             e.printStackTrace();
             return new CommonResult().failed("记录选择时出现问题");
@@ -35,24 +32,18 @@ public class ClassicPoetryLearnController {
 
     @GetMapping("/learn-list")
     public CommonResult getLearnList(@RequestParam("user-id") int userId, @RequestParam("task-id") int taskId){
-        List<ReciteToLearn> learnList = classicPoetryLearnService.getLearnListByTask(userId, taskId);
-        if (learnList == null){
-            return new CommonResult().failed("EMPTY LEARN LIST");
-        }
-        return new CommonResult().success(learnList);
+        ReciteToLearn learn = classicPoetryLearnService.getLearnListByTask(userId, taskId);
+        return new CommonResult().success(learn);
     }
 
     @GetMapping("/command-list")
     public CommonResult getCommandList(@RequestParam("user-id") int userId, @RequestParam("task-id") int taskId){
         List<ReciteLearnInfo> learnInfos = classicPoetryLearnService.getCommandRecite(userId, taskId);
-        if (learnInfos == null){
-            return new CommonResult().failed("EMPTY COMMAND LIST");
-        }
         return new CommonResult().success(learnInfos);
     }
 
     @PostMapping("/uncommand")
-    public CommonResult uncommand(@RequestParam("user-id") int userId, @RequestParam("task-id") int taskId){
+    public CommonResult uncommand(@RequestParam("user-id") int userId, @RequestParam("recite-id") int taskId){
         classicPoetryLearnService.setUncommand(userId, taskId);
         return new CommonResult().success();
     }
@@ -66,9 +57,6 @@ public class ClassicPoetryLearnController {
     @GetMapping("/collection")
     public CommonResult getCollection(@RequestParam("user-id") int userId){
         List<ReciteLearnInfo> learnInfos = classicPoetryLearnService.getReciteCollection(userId);
-        if (learnInfos == null){
-            return new CommonResult().failed("EMPTY COLLECTION LIST");
-        }
         return new CommonResult().success(learnInfos);
     }
 

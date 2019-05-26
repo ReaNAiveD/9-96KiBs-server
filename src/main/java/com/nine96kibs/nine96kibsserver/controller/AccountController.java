@@ -26,20 +26,12 @@ public class AccountController {
 
     @PostMapping("/login")
     @ResponseBody
-    public CommonResult login(@RequestBody AccountVO account, HttpSession session){
+    public CommonResult login(@RequestBody AccountVO account){
         AccountInfoVO user = accountService.login(account);
         if (user == null){
             return new CommonResult().failed("INCORRECT USERNAME OR PASSWORD");
         }
-        session.setAttribute(InterceptorConfiguration.SESSION_KEY, account);
         return new CommonResult().success(user);
-    }
-
-    @PostMapping("/logout")
-    @ResponseBody
-    public CommonResult logout(HttpSession session){
-        session.removeAttribute(InterceptorConfiguration.SESSION_KEY);
-        return new CommonResult().success();
     }
 
 }

@@ -15,12 +15,12 @@ public interface ClassicPoetryLearnService {
     void reciteChoose(ReciteLearnChoice learnChoice);
 
     /**
-     * 得到一份任务的学习情况列表，这份列表将传给前端作为当前的学习列表
+     * 得到一份任务的下一个学习，这份列表将传给前端作为当前的学习列表
      * @param userId 用户id
      * @param taskId 任务id
-     * @return 学习列表
+     * @return 学习
      */
-    List<ReciteToLearn> getLearnListByTask(int userId, int taskId);
+    ReciteToLearn getLearnListByTask(int userId, int taskId);
 
     /**
      * 得到某一任务掌握的条目

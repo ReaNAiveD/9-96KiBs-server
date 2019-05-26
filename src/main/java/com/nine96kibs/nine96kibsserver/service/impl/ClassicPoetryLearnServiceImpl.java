@@ -8,6 +8,7 @@ import com.nine96kibs.nine96kibsserver.service.ClassicPoetryLearnService;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,15 +63,16 @@ public class ClassicPoetryLearnServiceImpl implements ClassicPoetryLearnService 
      * @return 学习列表
      */
     @Override
-    public List<ReciteToLearn> getLearnListByTask(int userId, int taskId) {
+    @Transactional
+    public ReciteToLearn getLearnListByTask(int userId, int taskId) {
         List<ReciteLearnInfo> learnInfoList = classicPoetryLearnMapper.selectLearnInfoByUserAndTask(userId, taskId);
-        List<ReciteToLearn> result = new ArrayList<>();
+        if (learnInfoList.size() == 0) return null;
+        List<ReciteToLearn> reciteToLearns = new ArrayList<>();
         for (ReciteLearnInfo learnInfo :
              learnInfoList) {
-            result.add(new ReciteToLearn(learnInfo));
+            reciteToLearns.add(new ReciteToLearn(learnInfo));
         }
-        Collections.reverse(result);
-        return result;
+        return Collections.max(reciteToLearns);
     }
 
     /**
