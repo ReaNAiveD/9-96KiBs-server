@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nine96kibs.nine96kibsserver.dao.ClassicPoetryLearnMapper">
+    <select id="selectLearnInfoByUserAndTask" resultType="com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo">
+        select recite_id as reciteId, ifCommand, latestLearn, impressionCount, latestChoice, topic, topic_sub as topicSub,
+               answer, answer_sub as answerSub, article_id as articleId from
+               (select * from classic_poetry_task_recite left join classic_poetry_recite
+                   on classic_poetry_task_recite.recite_id = classic_poetry_recite.id
+               where classic_poetry_task_recite.task_id = #{task_id}) reciteList
+                left join (select recite_id as reciteId, if_command as ifCommand, latest_learn as latestLearn, impression_count as impressionCount,
+                                  latest_choice as latestChoice from classic_poetry_user_learn_progress where user_id = #{user_id}) a
+                    on reciteList.recite_id = a.reciteId
+    </select>
+
+    <select id="selectCollectionRecite" resultType="com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo">
+        select classic_poetry_user_collection.recite_id, if_command as ifCommand, latest_learn as latestLearn,
+               impression_count as impressionCount, latest_choice as latestChoice, topic, topic_sub as topicSub,
+               answer, answer_sub as answerSub, article_id as articleId from classic_poetry_user_collection
+            left join classic_poetry_recite on recite_id = classic_poetry_recite.id
+            left join classic_poetry_user_learn_progress on classic_poetry_user_collection.recite_id = classic_poetry_user_learn_progress.recite_id
+                                                                and classic_poetry_user_collection.user_id = classic_poetry_user_learn_progress.user_id
+        where classic_poetry_user_collection.user_id = #{user_id}
+    </select>
+
+    <insert id="insertReciteLearnInfo" parameterType="com.nine96kibs.nine96kibsserver.po.ReciteLearnProgress">
+        insert classic_poetry_user_learn_progress(recite_id, user_id, if_command, impression_count, latest_choice, latest_learn)
+        values (#{learn_progress.reciteId}, #{learn_progress.userId}, #{learn_progress.ifCommand}, #{learn_progress.impressionCount},
+        #{learn_progress.latestChoice}, #{learn_progress.latestLearn})
+    </insert>
+
+    <update id="updateReciteLearnInfo" parameterType="com.nine96kibs.nine96kibsserver.po.ReciteLearnProgress">
+        update classic_poetry_user_learn_progress set if_command = #{learn_progress.ifCommand}, impression_count = #{learn_progress.impressionCount},
+                                                      latest_choice = #{learn_progress.latestChoice}, latest_learn = #{learn_progress.latestLearn}
+        where recite_id = #{learn_progress.reciteId} and user_id = #{learn_progress.userId}
+    </update>
+
+    <select id="selectLearnProgressByUserAndRecite" resultType="com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo">
+        select recite_id as reciteId, if_command as ifCommand, latest_learn as latestLearn, impression_count as impressionCount,
+               latest_choice as latestChoice, topic, topic_sub as topicSub, answer, answer_sub as answerSub, article_id as articleId
+        from classic_poetry_user_learn_progress left join classic_poetry_recite on recite_id = classic_poetry_recite.id
+        where user_id = #{user_id} and recite_id = #{recite_id}
+    </select>
+
+    <select id="selectCommandReciteByUserAndTask" resultType="com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo">
+        select reciteId, ifCommand, latestLearn, impressionCount, latestChoice, topic, topic_sub as topicSub,
+               answer, answer_sub as answerSub, article_id as articleId from classic_poetry_task_recite
+            left join (select recite_id as reciteId, if_command as ifCommand, latest_learn as latestLearn, impression_count as impressionCount,
+               latest_choice as latestChoice from classic_poetry_user_learn_progress where user_id = #{user_id}) a on recite_id = reciteId
+        left join classic_poetry_recite on classic_poetry_recite.id = reciteId
+        where ifCommand = 1 and classic_poetry_task_recite.task_id = #{task_id}
+    </select>
+
+    <update id="setUncommand">
+        update classic_poetry_user_learn_progress set if_command = 0, latest_choice = 0 where recite_id = #{recite_id} and user_id = #{user_id}
+    </update>
+
+    <insert id="insertCollectionRecite">
+        insert classic_poetry_user_collection(user_id, recite_id) VALUES (#{user_id}, #{recite_id})
+    </insert>
+
+    <delete id="deleteCollectionRecite">
+        delete from classic_poetry_user_collection where user_id = #{user_id} and recite_id = #{recite_id}
+    </delete>
+
+</mapper>
