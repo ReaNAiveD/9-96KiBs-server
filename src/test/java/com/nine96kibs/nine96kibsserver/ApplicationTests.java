@@ -1,7 +1,6 @@
 package com.nine96kibs.nine96kibsserver;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.nine96kibs.nine96kibsserver.dao.AccountMapper;
@@ -14,6 +13,7 @@ import com.nine96kibs.nine96kibsserver.service.ClassicPoetryLearnService;
 import com.nine96kibs.nine96kibsserver.vo.AccountInfoVO;
 import com.nine96kibs.nine96kibsserver.vo.AccountVO;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
+import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
 import okhttp3.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,7 +95,7 @@ public class ApplicationTests {
         reciteToLearn = classicPoetryLearnService.getLearnListByTask(userId, 1);
         classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), userId, 0));
         reciteToLearn = classicPoetryLearnService.getLearnListByTask(userId, 1);
-        Assert.assertEquals(0, reciteToLearn.getRecitePrior(), 0.001);
+        Assert.assertEquals(0, reciteToLearn.getRecitePrior(), 0.01);
         classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), userId, 2));
         Assert.assertEquals(1, classicPoetryLearnService.getCommandRecite(userId, 1).size());
         int commandReciteId = classicPoetryLearnService.getCommandRecite(userId, 1).get(0).getReciteId();
@@ -145,6 +145,7 @@ public class ApplicationTests {
             AccountInfoVO accountInfoVO = gson.fromJson(jsonObject.get("data"), AccountInfoVO.class);
             Assert.assertEquals("realTest", accountInfoVO.getUsername());
             int userId = accountInfoVO.getId();
+            new CommonResult().success(userId);
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -173,13 +174,22 @@ public class ApplicationTests {
             int userId = accountInfoVO.getId();
 
             request = new Request.Builder()
-                    .url("http://47.100.97.17:8848/classic-poetry/normal/learn-list?user-id=" + userId + "&task-id=1").get().build();
+                    .url("http://47.100.97.17:8848/classic-poetry/normal/learn?user-id=" + userId + "&task-id=1").get().build();
             response = httpClient.newCall(request).execute();
             Assert.assertTrue(response.isSuccessful());
             Assert.assertNotNull(response.body());
             System.out.println(response.body().toString());
             commonResult = gson.fromJson(response.body().string(), CommonResult.class);
             ReciteToLearn reciteToLearn = gson.fromJson(gson.toJson(commonResult.getData()), ReciteToLearn.class);
+
+            request = new Request.Builder()
+                    .url("http://47.100.97.17:8848/classic-poetry/normal/task-info?user-id=" + userId).get().build();
+            response = httpClient.newCall(request).execute();
+            Assert.assertTrue(response.isSuccessful());
+            Assert.assertNotNull(response.body());
+            System.out.println(response.body().toString());
+            commonResult = gson.fromJson(response.body().string(), CommonResult.class);
+            List<TaskInfo> taskInfo = gson.fromJson(gson.toJson(commonResult.getData()), new TypeToken<List<TaskInfo>>(){}.getType());
         } catch (IOException e){
             e.printStackTrace();
         }

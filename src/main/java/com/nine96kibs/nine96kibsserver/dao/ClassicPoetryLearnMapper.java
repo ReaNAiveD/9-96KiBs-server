@@ -1,9 +1,7 @@
 package com.nine96kibs.nine96kibsserver.dao;
 
-import com.nine96kibs.nine96kibsserver.po.ClassicPoetryReciteModel;
 import com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo;
 import com.nine96kibs.nine96kibsserver.po.ReciteLearnProgress;
-import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
 import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

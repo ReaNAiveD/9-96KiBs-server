@@ -2,7 +2,6 @@ package com.nine96kibs.nine96kibsserver.po;
 
 import lombok.Getter;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class ReciteToLearn extends ReciteLearnInfo implements Comparable<ReciteToLearn> {
@@ -18,7 +17,7 @@ public class ReciteToLearn extends ReciteLearnInfo implements Comparable<ReciteT
             recitePrior = 1;
         }else {
             Date currentDate = new Date();
-            double deltaSecond = (currentDate.getTime() - getLatestLearn().getTime()) / 60000;
+            double deltaSecond = (currentDate.getTime() - getLatestLearn().getTime()) / 60000.0;
             double d = 0;
             if (getLatestChoice() == 0) d = 1.5;
             recitePrior = (1 / (double)(1 + getImpressionCount()) + d) * Math.log10(deltaSecond + 1);

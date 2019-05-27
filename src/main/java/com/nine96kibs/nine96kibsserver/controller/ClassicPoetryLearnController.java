@@ -6,9 +6,7 @@ import com.nine96kibs.nine96kibsserver.po.ReciteToLearn;
 import com.nine96kibs.nine96kibsserver.service.ClassicPoetryLearnService;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
 import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
