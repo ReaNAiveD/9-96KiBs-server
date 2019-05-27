@@ -6,6 +6,7 @@ import com.nine96kibs.nine96kibsserver.po.ReciteLearnProgress;
 import com.nine96kibs.nine96kibsserver.po.ReciteToLearn;
 import com.nine96kibs.nine96kibsserver.service.ClassicPoetryLearnService;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
+import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +71,7 @@ public class ClassicPoetryLearnServiceImpl implements ClassicPoetryLearnService 
         List<ReciteToLearn> reciteToLearns = new ArrayList<>();
         for (ReciteLearnInfo learnInfo :
              learnInfoList) {
-            reciteToLearns.add(new ReciteToLearn(learnInfo));
+            if (learnInfo == null || learnInfo.getIfCommand() == null || learnInfo.getIfCommand() == 0) reciteToLearns.add(new ReciteToLearn(learnInfo));
         }
         return Collections.max(reciteToLearns);
     }
@@ -118,5 +119,10 @@ public class ClassicPoetryLearnServiceImpl implements ClassicPoetryLearnService 
     @Override
     public List<ReciteLearnInfo> getReciteCollection(int userId) {
         return classicPoetryLearnMapper.selectCollectionRecite(userId);
+    }
+
+    @Override
+    public List<TaskInfo> getTaskInfo(int userId){
+        return classicPoetryLearnMapper.selectTaskInfo(userId);
     }
 }

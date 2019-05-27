@@ -3,6 +3,7 @@ package com.nine96kibs.nine96kibsserver.service;
 import com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo;
 import com.nine96kibs.nine96kibsserver.po.ReciteToLearn;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
+import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
 
 import java.util.List;
 
@@ -57,4 +58,6 @@ public interface ClassicPoetryLearnService {
      * @param recipeId 条目id
      */
     void uncollectRecite(int userId, int recipeId);
+
+    List<TaskInfo> getTaskInfo(int userId);
 }

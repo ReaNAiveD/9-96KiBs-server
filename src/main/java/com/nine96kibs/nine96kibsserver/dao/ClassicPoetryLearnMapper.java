@@ -4,6 +4,7 @@ import com.nine96kibs.nine96kibsserver.po.ClassicPoetryReciteModel;
 import com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo;
 import com.nine96kibs.nine96kibsserver.po.ReciteLearnProgress;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
+import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -77,10 +78,12 @@ public interface ClassicPoetryLearnMapper {
 
     /**
      * 删除一条收藏信息
-     * @param usrId 用户id
+     * @param userId 用户id
      * @param reciteId 条目id
      * @return 默认
      */
-    int deleteCollectionRecite(@Param("user_id") int usrId, @Param("recite_id") int reciteId);
+    int deleteCollectionRecite(@Param("user_id") int userId, @Param("recite_id") int reciteId);
+
+    List<TaskInfo> selectTaskInfo(@Param("user_id") int userId);
 
 }

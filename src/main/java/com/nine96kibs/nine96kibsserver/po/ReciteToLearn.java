@@ -18,7 +18,6 @@ public class ReciteToLearn extends ReciteLearnInfo implements Comparable<ReciteT
             recitePrior = 1;
         }else {
             Date currentDate = new Date();
-            System.out.println("getLatestLearn() == null : " + (getLatestLearn() == null));
             double deltaSecond = (currentDate.getTime() - getLatestLearn().getTime()) / 60000;
             double d = 0;
             if (getLatestChoice() == 0) d = 1.5;

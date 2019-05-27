@@ -1,6 +1,5 @@
 package com.nine96kibs.nine96kibsserver.controller;
 
-import com.nine96kibs.nine96kibsserver.config.InterceptorConfiguration;
 import com.nine96kibs.nine96kibsserver.dto.CommonResult;
 import com.nine96kibs.nine96kibsserver.service.AccountService;
 import com.nine96kibs.nine96kibsserver.vo.AccountInfoVO;
@@ -8,8 +7,6 @@ import com.nine96kibs.nine96kibsserver.vo.AccountVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/account")

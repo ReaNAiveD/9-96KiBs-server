@@ -105,6 +105,19 @@ public class ApplicationTests {
         Assert.assertEquals(1, classicPoetryLearnService.getReciteCollection(userId).size());
         classicPoetryLearnService.uncollectRecite(userId, commandReciteId);
         Assert.assertEquals(0, classicPoetryLearnService.getReciteCollection(userId).size());
+
+
+//        ReciteToLearn reciteToLearn = classicPoetryLearnService.getLearnListByTask(6, 2);
+//        System.out.println(reciteToLearn.getRecitePrior() + " " + reciteToLearn.getReciteId());
+//        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), 6, 1));
+//        reciteToLearn = classicPoetryLearnService.getLearnListByTask(6, 2);
+//        System.out.println(reciteToLearn.getRecitePrior() + " " + reciteToLearn.getReciteId());
+//        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), 6, 1));
+//        reciteToLearn = classicPoetryLearnService.getLearnListByTask(6, 2);
+//        System.out.println(reciteToLearn.getRecitePrior() + " " + reciteToLearn.getReciteId());
+//        classicPoetryLearnService.reciteChoose(new ReciteLearnChoice(reciteToLearn.getReciteId(), 6, 1));
+//        reciteToLearn = classicPoetryLearnService.getLearnListByTask(6, 2);
+//        System.out.println(reciteToLearn.getRecitePrior() + " " + reciteToLearn.getReciteId());
     }
 
     @Test

@@ -63,4 +63,13 @@
         delete from classic_poetry_user_collection where user_id = #{user_id} and recite_id = #{recite_id}
     </delete>
 
+    <select id="selectTaskInfo" resultType="com.nine96kibs.nine96kibsserver.vo.TaskInfo">
+        select task_hub.id as taskId, task_name as taskName, ifnull(taskReciteTotal,0) as taskReciteTotal, ifnull(taskReciteCommand,0) as taskReciteCommand, ifnull(taskReciteLearning,0) as taskReciteLearning from task_hub
+                                                                                                                             left join (select count(recite_id) as taskReciteTotal, task_id from classic_poetry_task_recite group by task_id) total on total.task_id = task_hub.id
+                                                                                                                             left join (select taskRecite.task_id, sum(if_command) as taskReciteCommand from (select task_id, if_command from classic_poetry_task_recite left join classic_poetry_user_learn_progress
+                                                                                                                                                                                                                                                                                   on classic_poetry_task_recite.recite_id = classic_poetry_user_learn_progress.recite_id where user_id = #{user_id}) taskRecite) command on command.task_id = task_hub.id
+                                                                                                                             left join (select count(*) as taskReciteLearning, taskRecite.task_id from (select task_id, classic_poetry_user_learn_progress.recite_id from classic_poetry_task_recite
+                                                                                                                                                                                                                                                                              left join classic_poetry_user_learn_progress on classic_poetry_task_recite.recite_id = classic_poetry_user_learn_progress.recite_id where user_id = #{user_id}) taskRecite group by taskRecite.task_id) learning on learning.task_id = task_hub.id
+    </select>
+
 </mapper>

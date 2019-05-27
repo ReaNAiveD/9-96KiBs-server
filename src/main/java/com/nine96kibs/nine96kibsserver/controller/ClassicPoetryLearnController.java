@@ -5,6 +5,7 @@ import com.nine96kibs.nine96kibsserver.po.ReciteLearnInfo;
 import com.nine96kibs.nine96kibsserver.po.ReciteToLearn;
 import com.nine96kibs.nine96kibsserver.service.ClassicPoetryLearnService;
 import com.nine96kibs.nine96kibsserver.vo.ReciteLearnChoice;
+import com.nine96kibs.nine96kibsserver.vo.TaskInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,9 +31,10 @@ public class ClassicPoetryLearnController {
         return new CommonResult().success();
     }
 
-    @GetMapping("/learn-list")
+    @GetMapping("/learn")
     public CommonResult getLearnList(@RequestParam("user-id") int userId, @RequestParam("task-id") int taskId){
         ReciteToLearn learn = classicPoetryLearnService.getLearnListByTask(userId, taskId);
+        System.out.println(learn.getReciteId() + " " + learn.getRecitePrior());
         return new CommonResult().success(learn);
     }
 
@@ -64,6 +66,12 @@ public class ClassicPoetryLearnController {
     public CommonResult uncollect(@RequestParam("user-id") int userId, @RequestParam("recite-id") int reciteId){
         classicPoetryLearnService.uncollectRecite(userId, reciteId);
         return new CommonResult().success();
+    }
+
+    @GetMapping("/task-info")
+    public CommonResult getTaskInfo(@RequestParam("user-id") int userId){
+        List<TaskInfo> taskInfos = classicPoetryLearnService.getTaskInfo(userId);
+        return new CommonResult().success(taskInfos);
     }
 
 }
